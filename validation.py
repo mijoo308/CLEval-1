@@ -7,20 +7,21 @@ def validate_data(gt_file, submit_file):
                             Validates also that there are no missing files in the folder.
                             If some error detected, the method raises the error
     """
-    gt = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
-    subm = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
+    if PARAMS.BOX_TYPE != 'XML':
+        gt = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
+        subm = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
 
-    # Validate format of GroundTruth
-    for k in gt:
-        validate_lines_in_file(k, gt[k], PARAMS.CRLF, PARAMS.BOX_TYPE, True)
+        # Validate format of GroundTruth
+        for k in gt:
+            validate_lines_in_file(k, gt[k], PARAMS.CRLF, PARAMS.BOX_TYPE, True)
 
-    # Validate format of results
-    for k in subm:
-        if k not in gt:
-            raise Exception("The sample %s not present in GT" % k)
+        # Validate format of results
+        for k in subm:
+            if k not in gt:
+                raise Exception("The sample %s not present in GT" % k)
 
-        validate_lines_in_file(k, subm[k], PARAMS.CRLF, PARAMS.BOX_TYPE,
-                               PARAMS.TRANSCRIPTION, PARAMS.CONFIDENCES)
+            validate_lines_in_file(k, subm[k], PARAMS.CRLF, PARAMS.BOX_TYPE,
+                                   PARAMS.TRANSCRIPTION, PARAMS.CONFIDENCES)
 
 
 def validate_lines_in_file(fileName, file_contents, CRLF=True, LTRB=True, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0):
@@ -59,6 +60,8 @@ def validate_text_line_format(box_type=None, with_confidence=False, with_transcr
     elif box_type == "QUAD":
         pass
     elif box_type == "POLY":
+        pass
+    elif box_type == "XML":
         pass
     return False
 

@@ -679,8 +679,13 @@ def cleval_evaluation(gt_file, submit_file):
     # to store per sample evaluation results
     per_sample_metrics = {}
 
-    gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
-    submission_files = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
+    if PARAMS.BOX_TYPE == 'XML':
+        gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
+        submission_files = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
+
+    else:
+        gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
+        submission_files = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
 
     # prepare ThreadPool for multi-process
     executor = concurrent.futures.ProcessPoolExecutor(max_workers=PARAMS.NUM_WORKERS)

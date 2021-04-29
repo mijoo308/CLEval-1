@@ -247,7 +247,7 @@ def main_evaluation(validate_data_fn, evaluate_method_fn, show_result=True, per_
     resDict = {'calculated': True, 'Message': '', 'method': '{}', 'per_sample': '{}'}
     
     validate_data_fn(PARAMS.GT_PATH, PARAMS.SUBMIT_PATH)
-    evalData = evaluate_method_fn(PARAMS.GT_PATH, PARAMS.SUBMIT_PATH)
+    evalData = evaluate_method_fn(PARAMS.GT_PATH, PARAMS.SUBMIT_PATH)   # .xml
     resDict.update(evalData)
 
     if PARAMS.OUTPUT_PATH:
