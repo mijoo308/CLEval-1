@@ -679,7 +679,7 @@ def cleval_evaluation(gt_file, submit_file):
     # to store per sample evaluation results
     per_sample_metrics = {}
 
-    if PARAMS.BOX_TYPE == 'XML':
+    if PARAMS.BOX_TYPE == 'XML':  # XMl인 경우
         gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
         submission_files = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
 
@@ -687,33 +687,33 @@ def cleval_evaluation(gt_file, submit_file):
         gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
         submission_files = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
 
-    # prepare ThreadPool for multi-process
-    executor = concurrent.futures.ProcessPoolExecutor(max_workers=PARAMS.NUM_WORKERS)
-    futures = {}
-    bar_len = len(gt_files)
+        # prepare ThreadPool for multi-process
+        executor = concurrent.futures.ProcessPoolExecutor(max_workers=PARAMS.NUM_WORKERS)
+        futures = {}
+        bar_len = len(gt_files)
 
-    for file_idx in gt_files:
-        gt_file = rrc_evaluation_funcs.decode_utf8(gt_files[file_idx])
-        if file_idx in submission_files:
-            det_file = decode_utf8(submission_files[file_idx])
-            if det_file is None:
+        for file_idx in gt_files:
+            gt_file = rrc_evaluation_funcs.decode_utf8(gt_files[file_idx])
+            if file_idx in submission_files:
+                det_file = decode_utf8(submission_files[file_idx])
+                if det_file is None:
+                    det_file = ""
+            else:
                 det_file = ""
-        else:
-            det_file = ""
 
-        future = executor.submit(eval_single_result, gt_file, det_file)
-        futures[future] = file_idx
+            future = executor.submit(eval_single_result, gt_file, det_file)
+            futures[future] = file_idx
 
-    with tqdm(total=bar_len) as pbar:
-        pbar.set_description("Integrating results...")
-        for future in concurrent.futures.as_completed(futures):
-            file_idx = futures[future]
-            result = future.result()
-            per_sample_metrics[file_idx] = result
-            overall_result.accumulate_stats(result['Rawdata'])
-            pbar.update(1)
+        with tqdm(total=bar_len) as pbar:
+            pbar.set_description("Integrating results...")
+            for future in concurrent.futures.as_completed(futures):
+                file_idx = futures[future]
+                result = future.result()
+                per_sample_metrics[file_idx] = result
+                overall_result.accumulate_stats(result['Rawdata'])
+                pbar.update(1)
 
-    executor.shutdown()
+        executor.shutdown()
 
     resDict = {'calculated': True, 'Message': '', 'method': overall_result.to_dict(), 'per_sample': per_sample_metrics}
     return resDict
