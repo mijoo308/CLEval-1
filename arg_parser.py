@@ -14,15 +14,18 @@ parser.add_argument('-o', '--OUTPUT_PATH', default='output/', help="Path to a di
 parser.add_argument('-p', '--PORT', default=8080, help='port number to show')
 
 # result format related parameters
-parser.add_argument('--BOX_TYPE', default='XML', choices=['LTRB', 'QUAD', 'POLY', 'XML'])
+parser.add_argument('--BOX_TYPE', default='LTRB', choices=['LTRB', 'QUAD', 'POLY'])
 parser.add_argument('--TRANSCRIPTION', action='store_true')
 parser.add_argument('--CONFIDENCES', action='store_true')
 parser.add_argument('--CRLF', action='store_true')
+parser.add_argument('--XML', default=True, type=str2bool)
+
 
 # end-to-end related parameters
 parser.add_argument('--E2E', action='store_true')
 parser.add_argument('--CASE_SENSITIVE', default=True, type=str2bool)
 parser.add_argument('--RS', default=True, type=str2bool)
+
 
 # evaluation related parameters
 parser.add_argument('--AREA_PRECISION_CONSTRAINT', type=float, default=0.5)

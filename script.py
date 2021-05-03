@@ -13,6 +13,9 @@ from arg_parser import PARAMS
 import concurrent.futures
 from tqdm import tqdm
 
+from tempfile import TemporaryFile
+from xml.etree.ElementTree import parse
+
 
 def granularity_score(num_splitted):
     """get granularity penalty given number of how many splitted"""
@@ -664,6 +667,30 @@ def eval_single_result(gt_file, det_file):
     sample_result.evaluation()
     return sample_result.to_dict()
 
+def parse_xml_to_txt(xml_file):
+    name = xml_file.split('.xml')[0]
+
+    fp = open(name + '.txt', 'w', encoding='utf-8')
+    tree = parse(xml_file)
+    annotation = tree.getroot()
+    objects = annotation.findall('object')
+
+    for ob in objects:
+        string = ob[0].text
+        orientation = ob[1].text
+        bndbox = ob[2]
+        L = bndbox[0].text
+        T = bndbox[1].text
+        R = bndbox[2].text
+        B = bndbox[3].text
+
+        data = L + ',' + T + ',' + R + ',' + B + ',' + string + '\n'
+
+        fp.write(data)
+    fp.close()
+
+    return fp
+
 def cleval_evaluation(gt_file, submit_file):
     """
     evaluate and returns the results
@@ -679,9 +706,21 @@ def cleval_evaluation(gt_file, submit_file):
     # to store per sample evaluation results
     per_sample_metrics = {}
 
-    if PARAMS.BOX_TYPE == 'XML':  # XMl인 경우
-        gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
-        submission_files = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
+    if PARAMS.XML:  # XMl인 경우
+        name = gt_file.split('.xml')[0]
+        gt_name = gt_file.split('.xml')[0] + ".txt"
+        sb_name = submit_file.split('.xml')[0] + ".txt"
+
+        parse_xml_to_txt(gt_file)
+        parse_xml_to_txt(submit_file)
+
+        gt = open(gt_name, 'r', encoding='utf-8')
+        det = open(sb_name, 'r', encoding='utf-8')
+
+        result = eval_single_result(gt.read(), det.read())
+        per_sample_metrics[name] = result
+
+        overall_result.accumulate_stats(result['Rawdata'])
 
     else:
         gt_files = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)

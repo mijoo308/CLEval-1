@@ -7,7 +7,7 @@ def validate_data(gt_file, submit_file):
                             Validates also that there are no missing files in the folder.
                             If some error detected, the method raises the error
     """
-    if PARAMS.BOX_TYPE != 'XML':
+    if not PARAMS.XML:
         gt = load_zip_file(gt_file, PARAMS.GT_SAMPLE_NAME_2_ID)
         subm = load_zip_file(submit_file, PARAMS.DET_SAMPLE_NAME_2_ID, True)
 
