@@ -5,6 +5,13 @@ Official implementation of CLEval | [paper](https://arxiv.org/abs/2006.06244)
 
 ## 사용방법
 
+### Requirements
+* python 3.x
+* see requirements.txt file to check package dependency. To install, command
+```
+pip3 install -r requirements.txt
+```
+
 ### XML파일 사용시
 ```
 python script.py  -g= [gt파일명].xml -s=[result파일명].xml --E2E --BOX_TYPE=LTRB
